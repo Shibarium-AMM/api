@@ -1,0 +1,27 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - redis
+    command: python -m app.app
+    env_file:
+      - .env
+    restart: always
+  sync:
+    build: .
+    depends_on:
+      - redis
+    command: python -m app.pairs.syncer
+    env_file:
+      - .env
+    restart: always
+  redis:
+    image: redis
+    expose:
+      - "6379"
+    volumes:
+      - ./data:/data
+    restart: always
